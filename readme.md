@@ -14,6 +14,10 @@ It is a backend API of a zooCity application. Here some api endpoints are create
     DB_NAME=
     DB_USERNAME=
     DB_PASSWORD=
+
+    CLOUDINARY_CLOUD_NAME=
+    CLOUDINARY_API_KEY=
+    CLOUDINARY_API_SECRET=
     ```
 
 -   Run application: `npm run dev`

@@ -6,8 +6,8 @@ async function DBConnectionHandler() {
     try {
         const DB_OPTIONS = {
             dbName: process.env.DB_NAME,
-            // user: process.env.DB_USERNAME,
-            // pass: process.env.DB_PASSWORD,
+            user: process.env.DB_USERNAME,
+            pass: process.env.DB_PASSWORD,
             useNewUrlParser: true, //required to connect db in dev. mode
             useUnifiedTopology: true, //required to connect db in dev. mode
         };
