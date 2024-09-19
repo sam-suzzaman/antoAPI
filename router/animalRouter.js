@@ -2,7 +2,10 @@ const express = require("express");
 const animalRouter = express.Router();
 
 // Middlewares
-const { Upload, imgBBUpload } = require("../middleware/animalAvatarMiddleware");
+const {
+    mUpload,
+    uploadToCloudinary,
+} = require("../middleware/animalAvatarMiddleware");
 
 // controllers
 const {
@@ -11,7 +14,12 @@ const {
 } = require("../controller/animalController");
 
 // Routes
-animalRouter.post("/", Upload.single("photo"), imgBBUpload, addAnimalHandler);
+animalRouter.post(
+    "/",
+    mUpload.single("photo"),
+    uploadToCloudinary,
+    addAnimalHandler
+);
 animalRouter.get("/", getAnimalsHandler);
 
 module.exports = animalRouter;

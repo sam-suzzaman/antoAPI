@@ -1,41 +1,46 @@
 const multer = require("multer");
-const axios = require("axios");
-require("dotenv").config();
 
-const storage = multer.memoryStorage(); // No disk storage, all in memory
-const Upload = multer({ storage });
+const { v2: cloudinary } = require("cloudinary");
+const streamifier = require("streamifier");
 
-// Custom middleware to upload image to ImgBB
-const imgBBUpload = async (req, res, next) => {
+// Multer setup for handling files in memory
+const storage = multer.memoryStorage();
+const mUpload = multer({ storage });
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const uploadToCloudinary = (req, res, next) => {
     if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+        return res.status(400).json({
+            status: false,
+            message: "Operation failed",
+            result: "No file uploaded",
+        });
     }
 
-    try {
-        // Convert image buffer to base64
-        const photoBase64 = req.file.buffer.toString("base64");
-
-        // Upload the base64 image to ImgBB
-        const imgBBApiKey = process.env.IMGBB_API_KEY;
-        const response = await axios.post(
-            "https://api.imgbb.com/1/upload",
-            null,
-            {
-                params: {
-                    key: imgBBApiKey,
-                    image: photoBase64,
-                },
+    // Convert buffer to readable stream and upload directly to Cloudinary
+    const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "anto" }, // Optional folder in Cloudinary
+        (error, result) => {
+            if (error) {
+                return res.status(500).json({
+                    error: "Cloudinary upload failed",
+                    details: error,
+                });
             }
-        );
 
-        // Attach the uploaded ImgBB URL to the req object
-        req.imgURL = response.data.data.url;
+            // Attach the Cloudinary URL to the request object for further use
+            req.avatarUrl = result.secure_url;
+            next();
+        }
+    );
 
-        next();
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ error: "Failed to upload image to ImgBB" });
-    }
+    // Convert the file buffer to a readable stream and pipe it to Cloudinary
+    streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
 };
 
-module.exports = { Upload, imgBBUpload };
+module.exports = { mUpload, uploadToCloudinary };

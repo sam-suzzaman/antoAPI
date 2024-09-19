@@ -8,25 +8,24 @@ const addCategoryHandler = async (req, res) => {
         const isExist = await CategoryModel.findOne({ name });
 
         if (isExist) {
-            res.status(400).json({
+            return res.status(400).json({
                 status: false,
                 message: "Operation Failed",
                 result: "Category alread Exists",
             });
-        } else {
-            const newCategory = new CategoryModel({
-                name,
-            });
-            await newCategory.save();
-
-            res.status(201).json({
-                status: true,
-                message: "Category Created",
-                result: "Successfully Created",
-            });
         }
+        const newCategory = new CategoryModel({
+            name,
+        });
+        await newCategory.save();
+
+        return res.status(201).json({
+            status: true,
+            message: "Category Created",
+            result: "Successfully Created",
+        });
     } catch (error) {
-        res.status(401).json({
+        return res.status(401).json({
             status: false,
             message: "Operation Failed",
             result: error.message,
@@ -40,20 +39,20 @@ const getCategoriesHandler = async (req, res) => {
         const result = await CategoryModel.find({});
 
         if (!result.length) {
-            res.status(400).json({
+            return res.status(400).json({
                 status: false,
                 message: "Operation failed",
                 result: "List is empty",
             });
-        } else {
-            res.status(201).json({
-                status: true,
-                message: "Categories fetched",
-                result,
-            });
         }
+
+        return res.status(201).json({
+            status: true,
+            message: "Categories fetched",
+            result,
+        });
     } catch (error) {
-        res.status(400).json({
+        return res.status(400).json({
             status: false,
             message: "Operation failed",
             result: error.message,
