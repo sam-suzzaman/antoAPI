@@ -24,7 +24,7 @@ It is a backend API of a zooCity application. Here some api endpoints are create
 
 ### API Endpoints:
 
--   `GET https://`: Base API Route
+-   `GET https://antoapi.onrender.com`: Base API Route
 -   `GET /animal`: Retrieve a list of animals.
 -   `POST /animal`: Add a new animal.
 -   `GET /category`: Retrieve a list of category.
